@@ -1,0 +1,103 @@
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: rgb(83, 187, 242);
+  color: #213547;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+.card {
+  padding: 2em;
+}
+
+#app {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  /* 大屏时保留padding，小屏通过媒体查询清除 */
+  padding: 0 16px;
+}
+
+.index-container {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+  background-color: transparent;
+  border-radius: 8px;
+  padding: 0;
+  box-shadow: none;
+  margin-top: 0;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.logo {
+  margin-top: 0;
+  padding-top: 0;
+  max-width: 100%;
+  height: auto;
+}
+
+/* 媒体查询：屏幕宽度小于480px时 */
+@media (max-width: 480px) {
+  #app {
+    /* 清除左右padding，让容器贴合屏幕 */
+    padding: 0;
+  }
+  /* 可选：如果需要让index-container在小屏下完全占满宽度 */
+  .index-container {
+    max-width: 100%;
+  }
+}
