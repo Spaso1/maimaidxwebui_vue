@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Index from './components/Index.vue';
-import HomeSubMenu from './components/HomeSubMenu.vue';
+import HomeSubMenu from './components/views/HomeSubMenu.vue';
+import Playlog from "./components/views/Playlog.vue";
 
 const currentMenu = ref('home');
 
@@ -25,6 +26,7 @@ const handleMenuChange = (menuId: string) => {
     
     <!-- Home 子菜单 -->
     <HomeSubMenu v-if="currentMenu === 'home'" />
+    <Playlog v-if="currentMenu === 'record'"/>
   </div>
 </template>
 

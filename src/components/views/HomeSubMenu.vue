@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue';
-import Record_Simple from './Record_Simple.vue';
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import Record_Simple from '../Record_Simple.vue';
 
 const homeSubItems = [
   { id: 'home', name: 'menu_sub_home_home' },
@@ -11,10 +11,32 @@ const homeSubItems = [
 
 const selectedItem = ref('home');
 const userPreview = ref({ iconUrl: '', name: '', rating: 0, rating_url: null, trophy_title: '', trophy_url: '', course_rank: '', class_rank: '', star: 0, chara: '' });
+const ratingData = ref({
+  newSongs: [],
+  bestSongs: [],
+  newCandidates: [],
+  bestCandidates: []
+});
+const isLoading = ref(false);
 // 用于存储当前吸顶的screw block元素
 const stickyBlock = ref<HTMLElement | null>(null);
 // 存储所有screw block的位置信息
 const blockOffsets = ref<{[key: string]: number}>({});
+
+const loadRatingData = async () => {
+  if (selectedItem.value !== 'rating') return;
+  
+  isLoading.value = true;
+  try {
+    const response = await fetch('/api/rating');
+    const data = await response.json();
+    ratingData.value = data;
+  } catch (error) {
+    console.error('Failed to fetch rating data:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const handleItemClick = (itemId: string) => {
   if (itemId === 'home' || itemId === 'rating') {
@@ -25,6 +47,10 @@ const handleItemClick = (itemId: string) => {
     nextTick(() => {
       calculateBlockOffsets();
     });
+    // 加载rating数据
+    if (itemId === 'rating') {
+      loadRatingData();
+    }
   }
 };
 
@@ -66,13 +92,13 @@ const handleScroll = () => {
     const nextBlockOffset = blockOffsets.value[nextBlockKey] || Infinity;
     
     // 判断当前block是否应该吸顶
-    if (scrollY >= blockOffset && scrollY < nextBlockOffset - block.offsetHeight) {
+    if (scrollY >= blockOffset - 10 && scrollY < nextBlockOffset - 10) {
       // 先移除所有block的吸顶状态
       resetStickyBlocks();
       // 给当前block添加吸顶状态
       block.classList.add('sticky-active');
       stickyBlock.value = block as HTMLElement;
-    } else if (scrollY < blockOffset && index === 0) {
+    } else if (scrollY < blockOffset - 10 && index === 0) {
       // 滚动到顶部时移除所有吸顶状态
       resetStickyBlocks();
     }
@@ -96,15 +122,6 @@ onMounted(async () => {
     // 添加窗口大小变化监听
     window.addEventListener('resize', calculateBlockOffsets);
   });
-});
-
-// 监听selectedItem变化，确保在切换到rating界面时重新计算偏移量
-watch(selectedItem, (newValue) => {
-  if (newValue === 'rating') {
-    nextTick(() => {
-      calculateBlockOffsets();
-    });
-  }
 });
 
 onUnmounted(() => {
@@ -223,6 +240,7 @@ onUnmounted(() => {
             <path d="M0,0 v25 q5,5 10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 v-25 Z" fill="#7cbc29"></path>
           </svg>
         </div>
+        <img src="/src/assets/line_01.png" alt="line" class="line_image" />
       </div>
     </footer>
   </div>
@@ -270,39 +288,78 @@ onUnmounted(() => {
       </div>
     </div>
     <div class="screw_block m_15 f_15 p_s">评分对象曲目（新曲）</div>
-    <div class="p_10">
+    <div class="p_10" v-if="isLoading">加载中...</div>
+    <div class="p_10" v-else>
       <Record_Simple
-          :level_id="3"
-          level_String="13+"
-          :score="100.5960"
-          music_name="病み垢ステロイド"
-          dx_score="2,596 / 2,733"
-          :comboType="1"
-          :syncType="5"
-          :score-type="13"
-      />
-      <Record_Simple
-          :level_id="0"
-          level_String="12+?"
-          :score="100.5960"
-          music_name="病み垢ステロイド"
-          :score-type="1"
+          v-for="(item, index) in ratingData.newSongs"
+          :key="index"
+          :level_id="item.level_id"
+          :level_String="item.level_String"
+          :score="item.score"
+          :music_name="item.music_name"
+          :dx_score="item.dx_score"
+          :comboType="item.comboType"
+          :syncType="item.syncType"
+          :score-type="item.score_type"
+          :type="item.type"
+
       />
     </div>
 
     <div class="screw_block m_15 f_15 p_s">评分对象曲目（最佳）</div>
-    <div class="h_500">
-
+    <div class="p_10" v-if="isLoading">加载中...</div>
+    <div class="p_10" v-else>
+      <Record_Simple
+          v-for="(item, index) in ratingData.bestSongs"
+          :key="index"
+          :level_id="item.level_id"
+          :level_String="item.level_String"
+          :score="item.score"
+          :music_name="item.music_name"
+          :dx_score="item.dx_score"
+          :comboType="item.comboType"
+          :syncType="item.syncType"
+          :score-type="item.score_type"
+          :type="item.type"
+      />
     </div>
 
     <div class="screw_block m_15 f_15 p_s">评分候选曲目（新曲）</div>
-    <div class="h_500">
+    <div class="p_10" v-if="isLoading">加载中...</div>
+    <div class="p_10" v-else>
+      <Record_Simple
+          v-for="(item, index) in ratingData.newCandidates"
+          :key="index"
+          :level_id="item.level_id"
+          :level_String="item.level_String"
+          :score="item.score"
+          :music_name="item.music_name"
+          :dx_score="item.dx_score"
+          :comboType="item.comboType"
+          :syncType="item.syncType"
+          :score-type="item.score_type"
+          :type="item.type"
 
+      />
     </div>
 
     <div class="screw_block m_15 f_15 p_s">评分候选曲目（最佳）</div>
-    <div class="h_500">
+    <div class="p_10" v-if="isLoading">加载中...</div>
+    <div class="p_10" v-else>
+      <Record_Simple
+          v-for="(item, index) in ratingData.bestCandidates"
+          :key="index"
+          :level_id="item.level_id"
+          :level_String="item.level_String"
+          :score="item.score"
+          :music_name="item.music_name"
+          :dx_score="item.dx_score"
+          :comboType="item.comboType"
+          :syncType="item.syncType"
+          :score-type="item.score_type"
+          :type="item.type"
 
+      />
     </div>
   </div>
 </template>
@@ -322,7 +379,7 @@ onUnmounted(() => {
 }
 .screw_block {
   padding: 15px 17px;
-  background: url(../assets/home_sub/icon_screw.png) left top no-repeat, url(../assets/home_sub/icon_screw.png) right top no-repeat, url(../assets/home_sub/icon_screw.png) left bottom no-repeat, url(../assets/home_sub/icon_screw.png) right bottom no-repeat, #fff;
+  background: url(../../assets/home_sub/icon_screw.png) left top no-repeat, url(../../assets/home_sub/icon_screw.png) right top no-repeat, url(../../assets/home_sub/icon_screw.png) left bottom no-repeat, url(../../assets/home_sub/icon_screw.png) right bottom no-repeat, #fff;
   box-shadow: 1px 3px 0px rgba(0, 0, 0, 0.4);
   border: 1px solid #b3b3b3;
   border-radius: 5px;
@@ -333,19 +390,20 @@ onUnmounted(() => {
   z-index: 99;
   /* 添加过渡效果 */
   transition: all 0.3s ease;
+
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
 
 /* 吸顶激活状态 */
 .screw_block.sticky-active {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  width: calc(100% - 30px);
-  max-width: 480px;
-  box-sizing: border-box;
-  z-index: 999;
+  //position: fixed;
+  //top: 0;
+  //margin: 0;
+  //width: 450px;
+  //margin: 0 auto;
+  //box-sizing: border-box;
 }
 
 .p_s {
@@ -543,7 +601,6 @@ onUnmounted(() => {
   display: flex;
   margin-top: 10px;
   gap: 10px;
-  flex-wrap: wrap; /* 新增：小屏幕自动换行 */
 }
 
 .comment_block {
@@ -553,7 +610,6 @@ onUnmounted(() => {
   padding: 10px;
   background: #dcf3ff;
   border-radius: 10px;
-  min-width: 200px; /* 新增：最小宽度 */
 }
 
 .chara_block {
@@ -916,7 +972,7 @@ footer {
 
 .footer-extension {
   width: 480px;
-  height: 200px;
+  height: 150px;
   margin: 0 auto;
   background-color: #55ab38;
 }

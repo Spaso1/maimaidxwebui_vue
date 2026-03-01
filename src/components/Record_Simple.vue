@@ -28,23 +28,26 @@
             <img v-if="scoreType == 1" src="/src/assets/record/music_icon_c.png">
             <img v-if="scoreType == 0" src="/src/assets/record/music_icon_d.png">
 
+            <img v-if="comboType === 0" src="/src/assets/record/music_icon_back.png">
+            <img v-if="comboType === 1" src="/src/assets/record/music_icon_fc.png">
+            <img v-if="comboType === 2" src="/src/assets/record/music_icon_fcp.png">
+            <img v-if="comboType === 3" src="/src/assets/record/music_icon_ap.png">
+            <img v-if="comboType === 4" src="/src/assets/record/music_icon_app.png">
             <img v-if="syncType === 0" src="/src/assets/record/music_icon_back.png">
             <img v-if="syncType === 1" src="/src/assets/record/music_icon_fs.png">
             <img v-if="syncType === 2" src="/src/assets/record/music_icon_fsp.png">
             <img v-if="syncType === 3" src="/src/assets/record/music_icon_fdx.png">
             <img v-if="syncType === 4" src="/src/assets/record/music_icon_fdxp.png">
             <img v-if="syncType === 5" src="/src/assets/record/music_icon_sync.png">
-            <img v-if="comboType === 1" src="/src/assets/record/music_icon_fc.png">
-            <img v-if="comboType === 2" src="/src/assets/record/music_icon_fcp.png">
-            <img v-if="comboType === 3" src="/src/assets/record/music_icon_ap.png">
-            <img v-if="comboType === 4" src="/src/assets/record/music_icon_app.png">
+
           </div>
         </div>
 
         <input type="hidden" name="idx" value="a17b34e2b6d63b67bdddcd1fa77cae53324d6fc82652c53a1ff4c738d279343f5ff9eb775b6f47242505255e8d1df68fa130d4a1dc65fd0726ac7ab217bdf24acMHphyjR81WoAapAVgmdrqwnm8hFH6wl3Wxgq6xd864=">
       </form>
     </div>
-    <img src="/src/assets/record/music_dx.png" class="music_kind_icon ">
+    <img v-if="type === 1" src="/src/assets/record/music_dx.png" class="music_kind_icon ">
+    <img v-if="type === 0" src="/src/assets/record/music_standard.png" class="music_kind_icon ">
   </div>
 </template>
 
@@ -82,6 +85,10 @@ const props = defineProps({
     required: true
   },
   scoreType: {
+    type: Number,
+    required: true
+  },
+  type: {
     type: Number,
     required: true
   }
