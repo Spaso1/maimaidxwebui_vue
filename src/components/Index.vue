@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { ref, defineEmits, onMounted, onUnmounted } from 'vue';
+import { ref, defineEmits, onMounted, onUnmounted, watch } from 'vue';
 
 const emit = defineEmits(['menu-change']);
 
-const activeMenu = ref('home');
+const props = defineProps<{
+  activeMenu?: string
+}>();
+
+const activeMenu = ref(props.activeMenu || 'home');
 const topRow = ref<HTMLElement | null>(null);
 const bottomRow = ref<HTMLElement | null>(null);
 
@@ -21,6 +25,12 @@ const handleMenuClick = (menuId: string) => {
   activeMenu.value = menuId;
   emit('menu-change', menuId);
 };
+
+watch(() => props.activeMenu, (newVal) => {
+  if (newVal) {
+    activeMenu.value = newVal;
+  }
+});
 
 const syncImageHeights = () => {
   if (!topRow.value || !bottomRow.value) return;

@@ -1,15 +1,44 @@
 package com.example.demo.been;
 
 public class RatingItem {
+    private int chart_id;
     private int level_id;
     private String level_String;
     private double score;
     private String music_name;
     private String dx_score;
-    private int comboType;
-    private int syncType;
+    private int combo_type;
+    private int sync_type;
     private int score_type;
     private int type;
+    private String genre;
+
+    private int playCount;
+    private String lastPlayDate;
+
+    public int getPlayCount() {
+        return playCount;
+    }
+
+    public void setPlayCount(int playCount) {
+        this.playCount = playCount;
+    }
+
+    public String getLastPlayDate() {
+        return lastPlayDate;
+    }
+
+    public void setLastPlayDate(String lastPlayDate) {
+        this.lastPlayDate = lastPlayDate;
+    }
+
+    public int getChart_id() {
+        return chart_id;
+    }
+
+    public void setChart_id(int chart_id) {
+        this.chart_id = chart_id;
+    }
 
     public int getType() {
         return type;
@@ -60,20 +89,20 @@ public class RatingItem {
         this.dx_score = dx_score;
     }
 
-    public int getComboType() {
-        return comboType;
+    public int getCombo_type() {
+        return combo_type;
     }
 
-    public void setComboType(int comboType) {
-        this.comboType = comboType;
+    public void setCombo_type(int combo_type) {
+        this.combo_type = combo_type;
     }
 
-    public int getSyncType() {
-        return syncType;
+    public int getSync_type() {
+        return sync_type;
     }
 
-    public void setSyncType(int syncType) {
-        this.syncType = syncType;
+    public void setSync_type(int sync_type) {
+        this.sync_type = sync_type;
     }
 
     public int getScore_type() {
@@ -82,5 +111,13 @@ public class RatingItem {
 
     public void setScore_type(int score_type) {
         this.score_type = score_type;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
     }
 }

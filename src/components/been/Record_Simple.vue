@@ -1,58 +1,62 @@
 <template>
-  <div class="w_450 m_15 p_r f_0">
-    <div :class="[scoreBackClass, 'pointer', 'p_3']">
-      <form action="#" method="get" accept-charset="utf-8">
-        <img :src="diffImage" class="h_20 f_l">
-        <div class="clearfix"></div>
-        <div class="music_lv_block f_r t_c f_14">{{ level_String }}</div>
-        <div class="music_name_block t_l f_13 break">{{ music_name }}</div>
-        <div class="score_icons_container">
-          <div class="music_score_block w_112 t_r f_12">{{ score }}%</div>
-          <div v-if="dx_score" class="music_score_block w_150 t_r f_12">
-            <img src="/src/assets/record/deluxscore.png" class="v_b">
-            {{ dx_score }}
-          </div>
-          <div class="icons_group">
-            <img v-if="scoreType == 13" src="/src/assets/record/music_icon_sssp.png">
-            <img v-if="scoreType == 12" src="/src/assets/record/music_icon_sss.png">
-            <img v-if="scoreType == 11" src="/src/assets/record/music_icon_ssp.png">
-            <img v-if="scoreType == 10" src="/src/assets/record/music_icon_ss.png">
-            <img v-if="scoreType == 9" src="/src/assets/record/music_icon_sp.png">
-            <img v-if="scoreType == 8" src="/src/assets/record/music_icon_s.png">
-            <img v-if="scoreType == 7" src="/src/assets/record/music_icon_aaa.png">
-            <img v-if="scoreType == 6" src="/src/assets/record/music_icon_aa.png">
-            <img v-if="scoreType == 5" src="/src/assets/record/music_icon_a.png">
-            <img v-if="scoreType == 4" src="/src/assets/record/music_icon_bbb.png">
-            <img v-if="scoreType == 3" src="/src/assets/record/music_icon_bb.png">
-            <img v-if="scoreType == 2" src="/src/assets/record/music_icon_b.png">
-            <img v-if="scoreType == 1" src="/src/assets/record/music_icon_c.png">
-            <img v-if="scoreType == 0" src="/src/assets/record/music_icon_d.png">
+  <div class="record-card-wrapper" @click="handleClick">
+    <div ref="scalerRef" class="record-card-scaler">
+      <div class="w_450 m_15 p_r f_0">
+        <div :class="[scoreBackClass, 'pointer', 'p_3']">
+          <form action="#" method="get" accept-charset="utf-8">
+            <img :src="diffImage" class="h_20 f_l">
+            <div class="clearfix"></div>
+            <div class="music_lv_block f_r t_c f_14">{{ level_String }}</div>
+            <div class="music_name_block t_l f_13 break">{{ music_name }}</div>
+            <div class="score_icons_container">
+              <div class="music_score_block w_112 t_r f_12">{{ score }}%</div>
+              <div v-if="dx_score" class="music_score_block w_150 t_r f_12">
+                <img src="/src/assets/record/deluxscore.png" class="v_b">
+                {{ dx_score }}
+              </div>
+              <div class="icons_group">
+                <img v-if="scoreType == 13" src="/src/assets/record/music_icon_sssp.png">
+                <img v-if="scoreType == 12" src="/src/assets/record/music_icon_sss.png">
+                <img v-if="scoreType == 11" src="/src/assets/record/music_icon_ssp.png">
+                <img v-if="scoreType == 10" src="/src/assets/record/music_icon_ss.png">
+                <img v-if="scoreType == 9" src="/src/assets/record/music_icon_sp.png">
+                <img v-if="scoreType == 8" src="/src/assets/record/music_icon_s.png">
+                <img v-if="scoreType == 7" src="/src/assets/record/music_icon_aaa.png">
+                <img v-if="scoreType == 6" src="/src/assets/record/music_icon_aa.png">
+                <img v-if="scoreType == 5" src="/src/assets/record/music_icon_a.png">
+                <img v-if="scoreType == 4" src="/src/assets/record/music_icon_bbb.png">
+                <img v-if="scoreType == 3" src="/src/assets/record/music_icon_bb.png">
+                <img v-if="scoreType == 2" src="/src/assets/record/music_icon_b.png">
+                <img v-if="scoreType == 1" src="/src/assets/record/music_icon_c.png">
+                <img v-if="scoreType == 0" src="/src/assets/record/music_icon_d.png">
 
-            <img v-if="comboType === 0" src="/src/assets/record/music_icon_back.png">
-            <img v-if="comboType === 1" src="/src/assets/record/music_icon_fc.png">
-            <img v-if="comboType === 2" src="/src/assets/record/music_icon_fcp.png">
-            <img v-if="comboType === 3" src="/src/assets/record/music_icon_ap.png">
-            <img v-if="comboType === 4" src="/src/assets/record/music_icon_app.png">
-            <img v-if="syncType === 0" src="/src/assets/record/music_icon_back.png">
-            <img v-if="syncType === 1" src="/src/assets/record/music_icon_fs.png">
-            <img v-if="syncType === 2" src="/src/assets/record/music_icon_fsp.png">
-            <img v-if="syncType === 3" src="/src/assets/record/music_icon_fdx.png">
-            <img v-if="syncType === 4" src="/src/assets/record/music_icon_fdxp.png">
-            <img v-if="syncType === 5" src="/src/assets/record/music_icon_sync.png">
+                <img v-if="comboType === 0" src="/src/assets/record/music_icon_back.png">
+                <img v-if="comboType === 1" src="/src/assets/record/music_icon_fc.png">
+                <img v-if="comboType === 2" src="/src/assets/record/music_icon_fcp.png">
+                <img v-if="comboType === 3" src="/src/assets/record/music_icon_ap.png">
+                <img v-if="comboType === 4" src="/src/assets/record/music_icon_app.png">
+                <img v-if="syncType === 0" src="/src/assets/record/music_icon_back.png">
+                <img v-if="syncType === 1" src="/src/assets/record/music_icon_fs.png">
+                <img v-if="syncType === 2" src="/src/assets/record/music_icon_fsp.png">
+                <img v-if="syncType === 3" src="/src/assets/record/music_icon_fdx.png">
+                <img v-if="syncType === 4" src="/src/assets/record/music_icon_fdxp.png">
+                <img v-if="syncType === 5" src="/src/assets/record/music_icon_sync.png">
 
-          </div>
+              </div>
+            </div>
+
+            <input type="hidden" name="idx" value="a17b34e2b6d63b67bdddcd1fa77cae53324d6fc82652c53a1ff4c738d279343f5ff9eb775b6f47242505255e8d1df68fa130d4a1dc65fd0726ac7ab217bdf24acMHphyjR81WoAapAVgmdrqwnm8hFH6wl3Wxgq6xd864=">
+          </form>
         </div>
-
-        <input type="hidden" name="idx" value="a17b34e2b6d63b67bdddcd1fa77cae53324d6fc82652c53a1ff4c738d279343f5ff9eb775b6f47242505255e8d1df68fa130d4a1dc65fd0726ac7ab217bdf24acMHphyjR81WoAapAVgmdrqwnm8hFH6wl3Wxgq6xd864=">
-      </form>
+        <img v-if="type === 1" src="/src/assets/record/music_dx.png" class="music_kind_icon ">
+        <img v-if="type === 0" src="/src/assets/record/music_standard.png" class="music_kind_icon ">
+      </div>
     </div>
-    <img v-if="type === 1" src="/src/assets/record/music_dx.png" class="music_kind_icon ">
-    <img v-if="type === 0" src="/src/assets/record/music_standard.png" class="music_kind_icon ">
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch, defineEmits } from 'vue';
 
 const props = defineProps({
   level_id: {
@@ -91,8 +95,30 @@ const props = defineProps({
   type: {
     type: Number,
     required: true
+  },
+  chart_id: {
+    type: [String, Number],
+    required: false,
+    default: null
   }
 });
+
+const emit = defineEmits(['click']);
+
+const handleClick = () => {
+  console.log('Record_Simple handleClick called');
+  emit('click', { 
+    chart_id: props.chart_id, 
+    level_id: props.level_id, 
+    music_name: props.music_name,
+    score: props.score,
+    dx_score: props.dx_score,
+    comboType: props.comboType,
+    syncType: props.syncType,
+    scoreType: props.scoreType,
+    type: props.type
+  });
+};
 
 const diffImage = computed(() => {
   const diffMap = {
@@ -137,6 +163,31 @@ const scoreGrade = computed(() => {
   };
   return gradeMap[props.scoreType] || 'D';
 });
+
+const scalerRef = ref<HTMLDivElement | null>(null);
+
+const setCardScale = () => {
+  if (!scalerRef.value) return;
+  
+  const screenWidth = window.innerWidth || document.documentElement.clientWidth;
+  const scaleRatio = screenWidth > 480 ? 1 : screenWidth / 480;
+  
+  scalerRef.value.style.transform = `scale(${scaleRatio})`;
+  scalerRef.value.style.transformOrigin = 'top left';
+};
+
+onMounted(() => {
+  setCardScale();
+  window.addEventListener('resize', setCardScale);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', setCardScale);
+});
+
+watch([() => props.music_name], () => {
+  setCardScale();
+}, { immediate: false });
 </script>
 
 <script lang="ts">
@@ -157,9 +208,29 @@ export default {
 .w_450 {
   padding-top: 7px;
   width: 470px;
-  margin: 50px;
   padding-bottom: 57px;
   transition: transform 0.3s ease;
+}
+
+.record-card-wrapper {
+  width: 100%;
+  max-width: 480px;
+  margin: 0;
+  max-height: 120px;
+  overflow: hidden;
+  position: relative;
+}
+
+@media (max-width: 480px) {
+  .record-card-wrapper {
+    margin-bottom: 0;
+  }
+}
+
+.record-card-scaler {
+  width: 480px;
+  transform-origin: top left;
+  transition: transform 0s;
 }
 
 @media (max-width: 470px) {
@@ -278,7 +349,7 @@ export default {
 
 .music_kind_icon {
   position: absolute;
-  top: -35px;
+  top: 0px;
   right: 30px;
   height: 18px;
 }

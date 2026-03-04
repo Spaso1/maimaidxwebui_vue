@@ -42,7 +42,7 @@
                   <img src="/src/assets/playlog/icon_life.png" class="w_96 m_b_3">
                   <span :class="['kaleidx-health', isKaleidxHealthZero ? 'red' : 'white']">{{ kaleidxHealth }}</span>
                 </div>
-                <form action="#" method="get" accept-charset="utf-8" class="f_r">
+                <form @submit.prevent class="f_r">
                   <input type="hidden" name="idx" :value="recordIdx">
                   <button type="submit" class="f_0"><img src="/src/assets/record/btn_detail.png" class="w_84"></button>
                 </form>

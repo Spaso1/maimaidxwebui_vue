@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue';
-import Record_Simple from '../Record_Simple.vue';
+import { ref, onMounted, onUnmounted, nextTick, defineEmits } from 'vue';
+import Record_Simple from '../been/Record_Simple.vue';
+import Rating from '../been/Rating.vue';
+import { api } from '../../utils/api';
+
+const emit = defineEmits(['menu-change', 'music-select']);
 
 const homeSubItems = [
   { id: 'home', name: 'menu_sub_home_home' },
@@ -10,7 +14,7 @@ const homeSubItems = [
 ];
 
 const selectedItem = ref('home');
-const userPreview = ref({ iconUrl: '', name: '', rating: 0, rating_url: null, trophy_title: '', trophy_url: '', course_rank: '', class_rank: '', star: 0, chara: '' });
+const userPreview = ref({ iconUrl: '', name: '', rating: 0, trophy_title: '', trophy_url: '', course_rank: '', class_rank: '', star: 0, chara: '' });
 const ratingData = ref({
   newSongs: [],
   bestSongs: [],
@@ -18,18 +22,15 @@ const ratingData = ref({
   bestCandidates: []
 });
 const isLoading = ref(false);
-// 用于存储当前吸顶的screw block元素
 const stickyBlock = ref<HTMLElement | null>(null);
-// 存储所有screw block的位置信息
 const blockOffsets = ref<{[key: string]: number}>({});
 
 const loadRatingData = async () => {
   if (selectedItem.value !== 'rating') return;
-  
+
   isLoading.value = true;
   try {
-    const response = await fetch('/api/rating');
-    const data = await response.json();
+    const data = await api.get('/api/rating');
     ratingData.value = data;
   } catch (error) {
     console.error('Failed to fetch rating data:', error);
@@ -39,7 +40,9 @@ const loadRatingData = async () => {
 };
 
 const handleItemClick = (itemId: string) => {
-  if (itemId === 'home' || itemId === 'rating') {
+  if (itemId === 'playlog' || itemId === 'music' || itemId === 'course') {
+    emit('menu-change', 'record', itemId);
+  } else if (itemId === 'home' || itemId === 'rating') {
     selectedItem.value = itemId;
     // 切换标签时重置吸顶状态
     resetStickyBlocks();
@@ -52,6 +55,11 @@ const handleItemClick = (itemId: string) => {
       loadRatingData();
     }
   }
+};
+
+const handleMusicSelect = (item: any) => {
+  console.log('handleMusicSelect called with:', item);
+  emit('music-select', item);
 };
 
 // 重置所有吸顶块
@@ -67,7 +75,7 @@ const resetStickyBlocks = () => {
 const calculateBlockOffsets = () => {
   blockOffsets.value = {};
   const blocks = document.querySelectorAll('.screw_block');
-  
+
   blocks.forEach((block, index) => {
     const rect = block.getBoundingClientRect();
     // 存储相对于视口顶部的偏移量（加上滚动位置）
@@ -78,19 +86,19 @@ const calculateBlockOffsets = () => {
 // 处理滚动事件
 const handleScroll = () => {
   if (selectedItem.value !== 'rating') return;
-  
+
   const scrollY = window.scrollY;
   const blocks = document.querySelectorAll('.screw_block');
-  
+
   // 遍历所有screw block，找到当前应该吸顶的那个
   blocks.forEach((block, index) => {
     const blockKey = `block-${index}`;
     const blockOffset = blockOffsets.value[blockKey];
-    
+
     // 获取下一个block的偏移量
     const nextBlockKey = `block-${index + 1}`;
     const nextBlockOffset = blockOffsets.value[nextBlockKey] || Infinity;
-    
+
     // 判断当前block是否应该吸顶
     if (scrollY >= blockOffset - 10 && scrollY < nextBlockOffset - 10) {
       // 先移除所有block的吸顶状态
@@ -107,13 +115,12 @@ const handleScroll = () => {
 
 onMounted(async () => {
   try {
-    const response = await fetch('/api/userpreview');
-    const data = await response.json();
+    const data = await api.get('/api/userpreview');
     userPreview.value = data;
   } catch (error) {
     console.error('Failed to fetch user preview:', error);
   }
-  
+
   // 计算初始位置
   nextTick(() => {
     calculateBlockOffsets();
@@ -172,12 +179,7 @@ onUnmounted(() => {
               <div class="name_block f_16">
                 {{ userPreview.name }}
               </div>
-              <div class="p_r p_3" v-if="userPreview.rating_url">
-                <img :src="userPreview.rating_url" alt="rating" />
-                <div class="rating_block">
-                  {{ userPreview.rating }}
-                </div>
-              </div>
+              <Rating :rating="userPreview.rating" />
             </div>
             <img src="/src/assets/line_01.png" alt="line" class="line_image" />
             <div class="rank_images_container">
@@ -222,29 +224,25 @@ onUnmounted(() => {
             </div>
           </div>
           <img src="/src/assets/line_01.png" alt="line" class="line_image" />
+          <div class="w_430 f_14 m_t_10">
+            <div class="flex_container">
+              <div class="menu_home_button">
+                <img src="/src/assets/menu/menu_record.png" alt="menu_record" class="menu_home_image" />
+              </div>
+              <!-- 右侧超文本链接 -->
+              <div class="links_container">
+                <a href="#" @click.prevent="handleItemClick('playlog')" class="menu_link" :class="{ 'active': selectedItem === 'playlog' }">游戏记录</a>
+                <a href="#" @click.prevent="handleItemClick('music')" class="menu_link" :class="{ 'active': selectedItem === 'music' }">乐曲成绩</a>
+                <a href="#" @click.prevent="handleItemClick('course')" class="menu_link" :class="{ 'active': selectedItem === 'course' }">段位认定</a>
+              </div>
+            </div>
+          </div>
+          <img src="/src/assets/line_01.png" alt="line" class="line_image" />
         </div>
       </div>
     </div>
-    <!-- 动画图片区域 -->
-    <footer>
-      <div class="footer-content">
-        <div class="animation-container">
-          <div class="animation-wrapper">
-            <img src="/src/assets/back_area_dx.png" alt="back_area_dx" class="animation-image" />
-            <img src="/src/assets/back_area_dx.png" alt="back_area_dx" class="animation-image" />
-            <img src="/src/assets/back_area_dx.png" alt="back_area_dx" class="animation-image" />
-          </div>
-        </div>
-        <div class="footer-extension">
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 480 50" preserveAspectRatio="none" style="height:50px; position: relative; z-index: 1;">
-            <path d="M0,0 v25 q5,5 10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 t10,0 v-25 Z" fill="#7cbc29"></path>
-          </svg>
-        </div>
-        <img src="/src/assets/line_01.png" alt="line" class="line_image" />
-      </div>
-    </footer>
   </div>
-  <div v-if="selectedItem === 'rating'">
+  <div v-if="selectedItem === 'rating'" class="p_5">
     <div class="home-content-wrapper2 m_t_10">
       <div class="container p_10 t_l">在这里可以确认乐曲的评分对象曲目
       </div>
@@ -263,12 +261,7 @@ onUnmounted(() => {
               <div class="name_block f_16">
                 {{ userPreview.name }}
               </div>
-              <div class="p_r p_3" v-if="userPreview.rating_url">
-                <img :src="userPreview.rating_url" alt="rating" />
-                <div class="rating_block">
-                  {{ userPreview.rating }}
-                </div>
-              </div>
+              <Rating :rating="userPreview.rating" />
             </div>
             <img src="/src/assets/line_01.png" alt="line" class="line_image" />
             <div class="rank_images_container">
@@ -289,76 +282,81 @@ onUnmounted(() => {
     </div>
     <div class="screw_block m_15 f_15 p_s">评分对象曲目（新曲）</div>
     <div class="p_10" v-if="isLoading">加载中...</div>
-    <div class="p_10" v-else>
+    <div class="p_0" v-else>
       <Record_Simple
           v-for="(item, index) in ratingData.newSongs"
           :key="index"
+          :chart_id="item.chart_id"
           :level_id="item.level_id"
           :level_String="item.level_String"
           :score="item.score"
           :music_name="item.music_name"
           :dx_score="item.dx_score"
-          :comboType="item.comboType"
-          :syncType="item.syncType"
+          :comboType="item.combo_type"
+          :syncType="item.sync_type"
           :score-type="item.score_type"
           :type="item.type"
-
+          @click="handleMusicSelect"
       />
     </div>
 
     <div class="screw_block m_15 f_15 p_s">评分对象曲目（最佳）</div>
     <div class="p_10" v-if="isLoading">加载中...</div>
-    <div class="p_10" v-else>
+    <div class="p_0" v-else>
       <Record_Simple
           v-for="(item, index) in ratingData.bestSongs"
           :key="index"
+          :chart_id="item.chart_id"
           :level_id="item.level_id"
           :level_String="item.level_String"
           :score="item.score"
           :music_name="item.music_name"
           :dx_score="item.dx_score"
-          :comboType="item.comboType"
-          :syncType="item.syncType"
+          :comboType="item.combo_type"
+          :syncType="item.sync_type"
           :score-type="item.score_type"
           :type="item.type"
+          @click="handleMusicSelect"
       />
     </div>
 
     <div class="screw_block m_15 f_15 p_s">评分候选曲目（新曲）</div>
     <div class="p_10" v-if="isLoading">加载中...</div>
-    <div class="p_10" v-else>
+    <div class="p_0" v-else>
       <Record_Simple
           v-for="(item, index) in ratingData.newCandidates"
           :key="index"
+          :chart_id="item.chart_id"
           :level_id="item.level_id"
           :level_String="item.level_String"
           :score="item.score"
           :music_name="item.music_name"
           :dx_score="item.dx_score"
-          :comboType="item.comboType"
-          :syncType="item.syncType"
+          :comboType="item.combo_type"
+          :syncType="item.sync_type"
           :score-type="item.score_type"
           :type="item.type"
-
+          @click="handleMusicSelect"
       />
     </div>
 
     <div class="screw_block m_15 f_15 p_s">评分候选曲目（最佳）</div>
     <div class="p_10" v-if="isLoading">加载中...</div>
-    <div class="p_10" v-else>
+    <div class="p_0" v-else>
       <Record_Simple
           v-for="(item, index) in ratingData.bestCandidates"
           :key="index"
+          :chart_id="item.chart_id"
           :level_id="item.level_id"
           :level_String="item.level_String"
           :score="item.score"
           :music_name="item.music_name"
           :dx_score="item.dx_score"
-          :comboType="item.comboType"
-          :syncType="item.syncType"
+          :comboType="item.combo_type"
+          :syncType="item.sync_type"
           :score-type="item.score_type"
           :type="item.type"
-
+          @click="handleMusicSelect"
       />
     </div>
   </div>
@@ -385,31 +383,16 @@ onUnmounted(() => {
   border-radius: 5px;
   display: block;
   unicode-bidi: isolate;
-  /* 吸顶基础样式 */
-  position: relative;
-  z-index: 99;
-  /* 添加过渡效果 */
-  transition: all 0.3s ease;
-
   position: sticky;
   top: 0;
   z-index: 999;
+  width: 93%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
 }
 
-/* 吸顶激活状态 */
-.screw_block.sticky-active {
-  //position: fixed;
-  //top: 0;
-  //margin: 0;
-  //width: 450px;
-  //margin: 0 auto;
-  //box-sizing: border-box;
-}
 
 .p_s {
-  /* 移除原有sticky定位，改用JS控制 */
-  /* position: sticky;
-  top: 0; */
   z-index: 99;
 }
 .m_15 {
@@ -501,7 +484,6 @@ onUnmounted(() => {
 /* 修复：flex_container 基础样式 */
 .flex_container {
   display: flex;
-  margin-top: 20px;
   align-items: center;
   width: 100%;
   flex-shrink: 1;
@@ -515,6 +497,7 @@ onUnmounted(() => {
   max-height: none; /* 移除固定最大高度限制 */
   margin-top: 10px; /* 调整间距 */
   gap: 8px; /* 子元素间距 */
+  flex-wrap: nowrap; /* 强制并排，不换行 */
 }
 
 /* 修复：名称块 - 适配小屏幕 */
@@ -538,49 +521,6 @@ onUnmounted(() => {
   min-width: 120px; /* 新增：设置最小宽度，避免过度收缩 */
 }
 
-/* 修复：评分容器 - 关键修改 */
-.p_r {
-  position: relative;
-  height: 33px;
-  display: flex;
-  align-items: center;
-  flex-shrink: 1;
-  min-width: 0;
-  flex: 0 1 auto; /* 新增：只在必要时收缩，不主动扩展 */
-  min-width: 80px; /* 新增：设置最小宽度 */
-}
-
-.p_3 {
-  padding: 3px;
-  height: 100%;
-  box-sizing: border-box;
-  flex-shrink: 1;
-  min-width: 0;
-}
-
-.p_3 img {
-  width: 100%;
-  height: auto;
-  max-width: 103px;
-  flex-shrink: 1;
-}
-
-/* 修复：评分文字定位 - 适配小屏幕 */
-.rating_block {
-  position: absolute;
-  top: 50%;
-  right: 5px; /* 减小右侧距离 */
-  width: auto; /* 移除固定宽度 */
-  height: 33px;
-  line-height: 21px;
-  color: white;
-  text-align: right;
-  font-size: 14px; /* 小屏幕减小字体 */
-  transform: translateY(-36%);
-  padding-right: 7px;
-  padding-left: 10px; /* 增加左内边距，防止文字溢出 */
-}
-
 /* 修复：容器样式 - 适配小屏幕 */
 .container {
   display: block;
@@ -593,7 +533,7 @@ onUnmounted(() => {
   box-shadow: 0 0 0 2px #2e94f4, 0 0 0 6px #fff, 1px 8px 8px rgba(0, 0, 0, 0.2), 0 12px rgba(0, 0, 0, 0.2);
   border-radius: 10px;
   box-sizing: border-box; /* 新增：盒模型包含边框 */
-  padding: 0 10px; /* 新增：内边距 */
+  padding: 0 0px; /* 新增：内边距 */
 }
 
 /* 修复：评论和角色区域 - 小屏幕适配 */
@@ -656,24 +596,6 @@ onUnmounted(() => {
     height: 28px; /* 降低高度 */
     flex: 2; /* 调整占比，给名称更多空间 */
     min-width: 0; /* 必须保留，允许收缩 */
-  }
-
-  .p_r {
-    height: 28px; /* 同步降低高度 */
-    flex: 1; /* 调整占比，评分区域占1份 */
-    min-width: 70px; /* 最小宽度，避免挤太扁 */
-    width: auto; /* 恢复自动宽度，不占满整行 */
-    margin-top: 0; /* 取消上边距 */
-  }
-
-  .p_3 img {
-    max-width: 80px; /* 缩小评分背景图 */
-  }
-
-  .rating_block {
-    font-size: 10px; /* 缩小评分文字 */
-    right: 1px;
-    transform: translateY(-33%); /* 微调垂直居中 */
   }
 
   /* 排名区域适配 */
@@ -831,7 +753,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 5px;
+  padding: 0 0px;
 }
 
 .rank_image {
@@ -915,65 +837,10 @@ onUnmounted(() => {
 .menu_link {
   color: #3fc6fc;
 }
-
-/* 动画图片样式 */
-.animation-container {
-  width: 480px;
-  height: auto;
-  margin: 0 auto;
-  overflow: hidden;
-  position: relative;
+.p_0 {
+  padding: 0;
 }
-
-.animation-wrapper {
-  display: flex;
-  width: 300%; /* 3张图片的宽度 */
-  height: auto;
-  animation: scroll 30s linear infinite;
-}
-
-.animation-image {
-  width: 33.333%; /* 每张图片占容器1/3宽度 */
-  height: auto;
-  object-fit: contain;
-}
-
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-33.333%); /* 滚动一个图片宽度 */
-  }
-}
-
-/* footer样式 */
-footer {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.footer-content {
-  width: 480px;
-  margin: 0 auto;
-  position: relative;
-}
-
-.footer-content::before {
-  content: '';
-  position: absolute;
-  top: 80%;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to bottom, #72ae26 0%, #55ab38 100%);
-  z-index: -1;
-}
-
-.footer-extension {
-  width: 480px;
-  height: 150px;
-  margin: 0 auto;
-  background-color: #55ab38;
+.p_5 {
+  padding: 5px;
 }
 </style>

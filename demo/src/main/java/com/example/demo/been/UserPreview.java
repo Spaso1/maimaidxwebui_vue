@@ -5,7 +5,6 @@ public class UserPreview {
     private String name;
 
     private int rating;
-    private String rating_url;
 
 
     private String trophy_title;
@@ -54,14 +53,6 @@ public class UserPreview {
 
     public void setRating(int rating) {
         this.rating = rating;
-    }
-
-    public String getRating_url() {
-        return rating_url;
-    }
-
-    public void setRating_url(String rating_url) {
-        this.rating_url = rating_url;
     }
 
     public String getTrophy_title() {
