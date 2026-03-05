@@ -3,6 +3,7 @@ import { ref } from 'vue';
 import Index from './components/Index.vue';
 import HomeSubMenu from './components/views/HomeSubMenu.vue';
 import Playlog from "./components/views/Playlog.vue";
+import PlayData from "./components/views/PlayData.vue";
 
 const currentMenu = ref('home');
 const recordSubItem = ref('playlog');
@@ -40,7 +41,8 @@ const handleMusicSelect = (item: any) => {
     <!-- Home 子菜单 -->
     <HomeSubMenu v-if="currentMenu === 'home'" @menu-change="handleMenuChange" @music-select="handleMusicSelect" />
     <Playlog v-if="currentMenu === 'record'" :initial-item="recordSubItem" :music-item="musicItem"/>
-    
+    <PlayData v-if="currentMenu === 'playerdata'"/>
+
     <!-- Footer -->
     <footer>
       <div class="footer-content">
@@ -97,17 +99,15 @@ const handleMusicSelect = (item: any) => {
 .index-container {
   min-height: 100vh;
   position: relative;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 480px;
+  width: 480px;
+  margin: 0 auto;
   background-color: transparent;
   border-radius: 8px;
   padding: 0;
   box-shadow: none;
-  margin: 0 auto;
   box-sizing: border-box;
 }
 

@@ -225,6 +225,7 @@ export default {
   .record-card-wrapper {
     margin-bottom: 0;
   }
+
 }
 
 .record-card-scaler {
@@ -353,7 +354,11 @@ export default {
   right: 30px;
   height: 18px;
 }
-
+@media (max-width: 480px) {
+  .music_kind_icon {
+    right: -4%;
+  }
+}
 .p_3 {
   padding: 3px;
 }

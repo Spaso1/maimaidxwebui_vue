@@ -15,7 +15,7 @@ const getRatingImage = (rating: number): string => {
   if (rating >= 6000) return '/src/assets/rating/UI_CMN_DXRating_3.png';
   if (rating >= 4000) return '/src/assets/rating/UI_CMN_DXRating_2.png';
   if (rating >= 2000) return '/src/assets/rating/UI_CMN_DXRating_1.png';
-  return '/src/assets/rating/UI_CMN_DXRating_0.png';
+  return '/src/assets/rating/UI_CMN_DXRating_1.png';
 };
 </script>
 

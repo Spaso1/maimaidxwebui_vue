@@ -505,11 +505,11 @@ onMounted(async () => {
       </form>
     </div>
 
-    <div class="see_through_block m_5 m_t_10" v-show="activeMode!=='latest'"  v-if="!selectedMusic">
+    <div class="see_through_block m_5" v-show="activeMode!=='latest'"  v-if="!selectedMusic">
       <table class="music_scorelist_table table_f collapse f_0">
         <tbody>
         <tr>
-          <td class="t_c"><img src="/src/assets/music/music_icon_clear.png" class="h_25"><div class="f_10">{{ musicStatus?.clearCount }}/{{ musicStatus?.randDollyCount }}</div></td>
+          <td class="t_c"><img src="/src/assets/music/music_icon_clear.png" class="h_24"><div class="f_10">{{ musicStatus?.clearCount }}/{{ musicStatus?.randDollyCount }}</div></td>
           <td class="t_c"><img src="/src/assets/record/music_icon_s.png" class="h_24"><div class="f_10">{{ musicStatus?.sCount }}/{{ musicStatus?.randDollyCount }}</div></td>
           <td class="t_c"><img src="/src/assets/record/music_icon_sp.png" class="h_24"><div class="f_10">{{ musicStatus?.spCount }}/{{ musicStatus?.randDollyCount }}</div></td>
           <td class="t_c"><img src="/src/assets/record/music_icon_ss.png" class="h_24"><div class="f_10">{{ musicStatus?.ssCount }}/{{ musicStatus?.randDollyCount }}</div></td>
@@ -714,7 +714,17 @@ onMounted(async () => {
 .music_scorelist_table td {
   padding: 9px 0;
 }
-
+@media (max-width: 480px) {
+  .music_scorelist_table {
+    width: 100%;
+    max-width: 480px;
+  }
+  .music_scorelist_table td {
+    padding: 9px 0;
+    width: 14.28%;
+    word-break: break-all;
+  }
+}
 .see_through_block tr:last-child td:first-child {
   text-align: left;
 }
